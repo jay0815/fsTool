@@ -2,12 +2,11 @@
 const fs = require('fs');
 const path = require('path');
 
-const folderPath = `/Users/qiancheng/Desktop/trainingCamp/homework/`;
+const folderPath = `/Users/qiancheng/Desktop/trainingCamp/all-copy/`;
 
-const idsDB = "ids.json";
+const dbPath = path.join(__dirname, "db", "fullIds.json");
 
 const idsList = [];
-
 const getAllFilesId = (dir) => {
   const folders = fs.readdirSync(dir);
 
@@ -17,20 +16,23 @@ const getAllFilesId = (dir) => {
       if (itemStat.isDirectory()) {
           getAllFilesId(nextPath);  //递归读取文件
       } else {
-          const id = item.split('-')[0]; //获取文件唯一id
-          // record id
-          if(!isNaN(+id)) {
-            idsList.push(id);
-          }
+        if (![".DS_Store", "readme.md"].includes(item)) {
+          idsList.push(item);
+        }
       }
   });
-
 }
 
 const main = async () => {
   getAllFilesId(folderPath);
-  const stream = JSON.stringify(idsList);
-  fs.writeFileSync(idsDB, stream);
+  const idSet = new Set(idsList);
+  const uniqueIds = [];
+  idSet.forEach((i) => uniqueIds.push(i));
+  console.log('idsList', idsList.length)
+  console.log('idSet', idSet.size)
+  console.log('uniqueIds', uniqueIds.length)
+  const stream = JSON.stringify(uniqueIds, null, 4);
+  fs.writeFileSync(dbPath, stream);
 }
 
 main();

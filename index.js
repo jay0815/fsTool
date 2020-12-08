@@ -3,9 +3,9 @@ const fs = require('fs');
 const path = require('path');
 const { move, removeSync } = require('fs-extra');
 
-const idsDB = "ids.json";
+const DB = "fullIds.json";
 
-const mainName = 'week05';
+const mainName = 'week06';
 
 const folderPath = `/Users/qiancheng/Desktop/trainingCamp/homework/${mainName}/`;
 
@@ -15,11 +15,13 @@ const original = `/Users/qiancheng/Desktop/trainingCamp/homework/${mainName}/${m
 
 const main =  async () => {
   // 获取历史 文件 id’s
-  const idsPath = path.join(__dirname, "ids.json");
+  const dbPath = path.join(__dirname, "db", DB);
 
-  const ids = fs.existsSync(idsPath) ? JSON.parse(fs.readFileSync(idsPath)) : [];
+  const filesNamsList = fs.existsSync(dbPath) ? JSON.parse(fs.readFileSync(dbPath)) : [];
 
-  let existIds = new Set(ids);
+  let existFilesName = new Set(filesNamsList);
+
+  const unCheckFiles = [];
 
   // 读取当前folder路径
   const files = fs.readdirSync(folderPath);
@@ -31,13 +33,16 @@ const main =  async () => {
     // const sNo = file.split('-')[1]; // 抓取学号
     // map.set(sNo, file.trim()); // 替换文件名逻辑
     // 按课程区分
-    const [id, _, mainContent] = file.split('-');
+    const mainContent = file.split('-')[2];
     if (mainContent) {
-      if(existIds.has(id)) {
+      if(existFilesName.has(file)) {
+        // 移除重复文件
         removeSync(`${folderPath}/${file}`);
       }else {
+        unCheckFiles.push(file);
+
         const lesson = mainContent.split('.')[1].trim(); // 获取课程
-        ids.push(id); // 记录新的文件id
+        // filesNamsList.push(file); // 记录新的文件id
         if (dictionary.has(lesson)) {
           dictionary.get(lesson).push(file);
           await move(`${folderPath}/${file}`, `${folderPath}/${mainContent}/${file}`)
@@ -85,9 +90,14 @@ const main =  async () => {
   fs.writeFileSync(original, buffer);
 
   // 更新 ids 数据
+  const idsSet = new Set(unCheckFiles);
+  const ids = [];
+  idsSet.forEach((i) => ids.push(i));
   const data = JSON.stringify(ids);
 
-  fs.writeFileSync(idsDB, data);
+  const unCheckFilesDB = path.join(__dirname, "db", "unCheckFiles.json");
+
+  fs.writeFileSync(unCheckFilesDB, data);
 
   return void 0;
 }

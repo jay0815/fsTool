@@ -2,26 +2,14 @@ const xlsx = require('node-xlsx');
 
 const fs = require('fs');
 
-  const mainName = 'week05';
+const mainName = 'week06';
 
-  const original = `/Users/qiancheng/Desktop/trainingCamp/homework/${mainName}/${mainName}.xlsx`;
+const original = `/Users/qiancheng/Desktop/trainingCamp/homework/${mainName}/${mainName}.xlsx`;
 
 const target = `/Users/qiancheng/Desktop/trainingCamp/homework/${mainName}/钱冠丞助教-${mainName}-练习评语.xlsx`;
 
 const main = async () => {
-
-  // SheetList constructor
-  // type SheetList = Array<Sheet>
-  // Sheet constructor
-  // interface Sheet {
-  //   name: String; // sheet name
-  //   data: Array<Row> // 行数据
-  // }
-  // Row constructor
-  // type Row = Array<Column>
-  // Column constructor
-  // type Column = String | Number | undefined | null
-
+  
   // 需要表格表格解析时启用
 
   const sheetList = xlsx.parse(original);
